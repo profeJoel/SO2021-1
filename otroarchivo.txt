@@ -1,0 +1,4 @@
+Esta es una prueba
+con textos de más de una línea
+y vamos a ver cómo se puede leer partes del documento
+sin necesidad de ingresar a un editor de texto complejo
