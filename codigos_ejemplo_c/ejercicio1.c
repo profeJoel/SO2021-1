@@ -2,6 +2,12 @@
 #include<stdlib.h>
 #include<time.h>
 
+typedef struct asignatura{
+	char codigo[6];
+	char nombre[30];
+	float notas[3];
+}curso;
+
 typedef struct dd_mes_anho{
 	int dia;
 	int mes;
@@ -12,7 +18,10 @@ typedef struct persona{
 	int rut;
 	char dig_verificador;
 	char nombre[20];
+	char apellido[20];
 	fecha fecha_nacimiento;
+	int telefono;
+	curso cursos[5];
 }alumnos;
 
 /***********************************************************/
@@ -36,9 +45,36 @@ void ingreso_fecha(fecha *f){
 	f->anho = aa;
 }
 
+//agregar un curso a la vez
+void agregar_asignatura(curso *nuevo){
+	int i;
+	float nota;
+	
+	printf("Ingrese el codigo de la asignatura: \n");
+	fflush(stdin);
+	getchar();
+	fgets(nuevo->codigo, 6, stdin);
+
+	printf("Ingrese el Nombre de la asignatura: \n");
+	fflush(stdin);
+	getchar();
+	getchar();
+	fgets(nuevo->nombre, 30, stdin);
+
+	printf("Ingrese las tres notas del estudiante:\n");
+	//Ingreso de notas
+	for(i = 0; i < 3; i++){
+		do{
+			printf("Ingrese la nota %d\n", i+1);
+			scanf("%f", &nota);
+		}while(nota < 1 || nota > 7); //escala de 1 a 7
+		nuevo->notas[i] = nota;
+	}
+}
+
 //ingreso de datos en estructura
 void ingreso_datos_alumno(alumnos *ingresado){
-	int rut;
+	int rut, telefono, i;
 	char dv;
 	do{
 		printf("Ingrese el Rut del ALumno:\n");
@@ -59,13 +95,41 @@ void ingreso_datos_alumno(alumnos *ingresado){
 	printf("Ingrese el Nombre: \n");
 	fgets(ingresado->nombre, 20, stdin);
 
+	fflush(stdin);
+	printf("Ingrese el Apellido: \n");
+	fgets(ingresado->apellido, 20, stdin);
+
 	printf("Ingrese Fecha de Cumpleanhos:\n");
 	ingreso_fecha(&ingresado->fecha_nacimiento);
+
+	do{
+		printf("Ingrese telefono:\n");
+		scanf("%d", &telefono);
+	}while(telefono < 10000000 || telefono > 99999999); //numero de 8 digitos
+	ingresado->telefono = telefono;
+
+	//Agregar cursos
+	for(i = 0; i < 5; i++)
+		agregar_asignatura(&ingresado->cursos[i]);
+}
+
+float calcular_promedio_asignatura(curso *c){
+	float suma = 0, promedio;
+	int i, cant_notas = 3;
+
+	for(i = 0; i < 3; i++)
+		suma += c->notas[i];
+	promedio = suma/cant_notas;
+	return promedio;
 }
 
 void imprimir_datos_alumno(alumnos *a){
-	printf("\nNombre: %s\trut: %d-%c\tfecha nacimiento: %d/%d/%d", a->nombre,	
-		a->rut, a->dig_verificador, a->fecha_nacimiento.dia, a->fecha_nacimiento.mes, a->fecha_nacimiento.anho);
+	int i;
+	printf("\n\nNombre: %s\tApellido: %s\trut: %d-%c\tfecha nacimiento: %d/%d/%d\tTelefono: %d\nAsignaturas:", a->nombre,	a->apellido,
+		a->rut, a->dig_verificador, a->fecha_nacimiento.dia, a->fecha_nacimiento.mes, a->fecha_nacimiento.anho,a->telefono);
+	for(i = 0; i < 5; i++)
+		printf("\nCurso: %s (%s) > Promedio: %.1f\n", a->cursos[i].nombre, a->cursos[i].codigo, calcular_promedio_asignatura(&a->cursos[i]));
+	printf("\n\n");
 }
 
 int calcular_edad(fecha *f){
@@ -87,7 +151,7 @@ void imprimir_datos_alumno_con_edad(alumnos *a){
 
 /***********************************************************/
 int main(){
-	int cant_alumnos = 3, i;
+	int cant_alumnos = 1, i;
 	alumnos estudiantes[cant_alumnos];
 
 	for(i=0; i< cant_alumnos; i++)
@@ -98,8 +162,8 @@ int main(){
 		imprimir_datos_alumno(&estudiantes[i]);
 
 
-	for(i=0; i< cant_alumnos; i++)
-		imprimir_datos_alumno_con_edad(&estudiantes[i]);
+	//for(i=0; i< cant_alumnos; i++)
+	//	imprimir_datos_alumno_con_edad(&estudiantes[i]);
 
 	return 0;
 }
